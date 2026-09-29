@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ CYBER OSINT - سیستەمێ گەڕانێ ⚡</title>
+    <style>
+        :root {
+            --bg-color: #070913;
+            --card-bg: rgba(15, 23, 42, 0.85);
+            --border-color: rgba(56, 189, 248, 0.3);
+            --primary-color: #38bdf8;
+            --accent-color: #818cf8;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --danger-color: #f43f5e;
+            --success-color: #10b981;
+        }
+        body {
+            font-family: 'Tahoma', sans-serif;
+            background: radial-gradient(circle at center, #1e1b4b 0%, var(--bg-color) 100%);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 480px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7), 0 0 20px rgba(56, 189, 248, 0.1);
+        }
+        h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-size: 22px;
+            text-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+        }
+        .lang-switch {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        .lang-switch select {
+            background: rgba(30, 41, 59, 0.9);
+            color: var(--primary-color);
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            outline: none;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 15px;
+            box-sizing: border-box;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        input:focus, select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+            background: rgba(15, 23, 42, 1);
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: #070913;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+        }
+        button:hover {
+            opacity: 0.95;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(56, 189, 248, 0.5);
+        }
+        .link-text {
+            text-align: center;
+            margin-top: 18px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .link-text span {
+            color: var(--primary-color);
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .link-text span:hover {
+            text-decoration: underline;
+            color: #7dd3fc;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .result-box {
+            margin-top: 22px;
+            background: rgba(10, 15, 30, 0.95);
+            border: 1px solid var(--border-color);
+            padding: 18px;
+            border-radius: 12px;
+            max-height: 280px;
+            overflow-y: auto;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        .result-item {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        .footer-info {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .footer-info a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .footer-info a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="lang-switch">
+            <select id="langSelect" onchange="changeLanguage()">
+                <option value="badini">🌐 کوردی بادینی</option>
+                <option value="sorani">🌐 کوردی سۆرانی</option>
+            </select>
+        </div>
+
+        <!-- AUTH CARD (LOGIN / SIGNUP) -->
+        <div id="authCard" class="card">
+            <h2 id="authTitle">🛡️ CYBER OSINT 🛡️</h2>
+            
+            <!-- Signup Form -->
+            <div id="signupForm">
+                <div class="form-group">
+                    <label id="lblUser">👤 ناڤێ بەکارهێنەری / Username</label>
+                    <input type="text" id="regUser" placeholder="ناڤێ خۆ ل ڤێرە بنڤیسە...">
+                </div>
+                <div class="form-group">
+                    <label id="lblPass">🔑 پاسوورد / Password</label>
+                    <input type="password" id="regPass" placeholder="••••••••">
+                </div>
+                <button id="btnSignup" onclick="registerUser()">✨ تۆمارکرنا هەژمارێ (Signup)</button>
+                <div class="link-text">
+                    <span id="toLoginText" onclick="toggleAuth(true)">🔄 هەژمار هەیە؟ بچۆ ژوورێ (Login)</span>
+                </div>
+            </div>
+
+            <!-- Login Form -->
+            <div id="loginForm" class="hidden">
+                <div class="form-group">
+                    <label id="lblLoginUser">👤 ناڤێ بەکارهێنەری / Username</label>
+                    <input type="text" id="logUser" placeholder="ناڤێ خۆ ل ڤێرە بنڤیسە...">
+                </div>
+                <div class="form-group">
+                    <label id="lblLoginPass">🔑 پاسوورد / Password</label>
+                    <input type="password" id="logPass" placeholder="••••••••">
+                </div>
+                <button id="btnLogin" onclick="loginUser()">🚀 چوونا ژوورێ (Login)</button>
+                <div class="link-text">
+                    <span id="toSignupText" onclick="toggleAuth(false)">➕ هەژمار نینە؟ تۆمار بکە (Signup)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- DASHBOARD & OSINT SEARCH -->
+        <div id="dashboardCard" class="card hidden">
+            <h2 id="dashTitle">🔍 OSINT SEARCH ENGINE 🔍</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-size: 13px; background: rgba(15, 23, 42, 0.9); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color);">
+                <span id="welcomeUser" style="color: var(--success-color); font-weight: bold;"></span> 
+                <span style="cursor: pointer; color: var(--danger-color); font-weight: bold;" onclick="logoutUser()" id="logoutText">🚪 دەرکەوتن</span>
+            </div>
+
+            <!-- Database Selector (Zain, Duhok, Sulaymaniyah, Kirkuk) -->
+            <div class="form-group">
+                <label id="lblDbSelect">🗄️ هەلبژارتنا داتابەیسێ (Select Database)</label>
+                <select id="dbSelect">
+                    <option value="zain.db">📡 Zain Database (zain.db)</option>
+                    <option value="duhok.db">🏔️ Duhok Database (duhok.db)</option>
+                    <option value="sulaymaniyah.db">🏛️ Sulaymaniyah Database (sulaymaniyah.db)</option>
+                    <option value="kirkuk.db">⚡ Kirkuk Database (kirkuk.db)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label id="lblName">🏷️ ناڤ (Name)</label>
+                <input type="text" id="searchName" placeholder="مثال: یوسف...">
+            </div>
+            <div class="form-group">
+                <label id="lblFather">👨 ناڤێ باب (Father Name)</label>
+                <input type="text" id="searchFather" placeholder="مثال: سینان...">
+            </div>
+            <div class="form-group">
+                <label id="lblGrandfather">👴 ناڤێ باپیر (Grandfather Name)</label>
+                <input type="text" id="searchGrandfather" placeholder="مثال: ...">
+            </div>
+            
+            <button id="btnSearch" onclick="performSearch()">🔎 دەستپێکرنا گەڕانێ (Search)</button>
+
+            <div id="searchResult" class="result-box hidden"></div>
+        </div>
+
+        <div class="footer-info">
+            💬 پەیوەندی کرن: <a href="https://t.me/YUSEEF_SURCHI" target="_blank">@YUSEEF_SURCHI</a> 🚀
+        </div>
+    </div>
+
+    <script>
+        const langData = {
+            badini: {
+                title: "🛡️ CYBER OSINT 🛡️",
+                lblUser: "👤 ناڤێ بەکارهێنەری",
+                lblPass: "🔑 پاسوورد",
+                btnSignup: "✨ تۆمارکرنا هەژمارێ (Signup)",
+                toLogin: "🔄 هەژمار هەیە؟ بچۆ ژوورێ (Login)",
+                lblLoginUser: "👤 ناڤێ بەکارهێنەری",
+                lblLoginPass: "🔑 پاسوورد",
+                btnLogin: "🚀 چوونا ژوورێ (Login)",
+                toSignup: "➕ هەژمار نینە؟ تۆمار بکە (Signup)",
+                dashTitle: "🔍 گەڕانا ئۆسنت (OSINT SEARCH) 🔍",
+                logout: "🚪 دەرکەوتن",
+                lblDbSelect: "🗄️ هەلبژارتنا داتابەیسێ",
+                lblName: "🏷️ ناڤێ کەسی",
+                lblFather: "👨 ناڤێ بابێ",
+                lblGrandfather: "👴 ناڤێ باپیرێ",
+                btnSearch: "🔎 دەستپێکرنا گەڕانێ",
+                alertFill: "⚠️ هیڤییە خانەیێن پێتڤی پڕ بکە!",
+                alertWrong: "❌ ناڤێ بەکارهێنەری یان پاسوورد خەلەتە!",
+                successReg: "🎉 هژمار ب سەرکەفتیانە هاتە چێکرن!"
+            },
+            sorani: {
+                title: "🛡️ CYBER OSINT 🛡️",
+                lblUser: "👤 ناوی بەکارهێنەر",
+                lblPass: "🔑 پاسوورد",
+                btnSignup: "✨ تۆمارکردنی هەژمار (Signup)",
+                toLogin: "🔄 هەژمارت هەیە؟ بچۆرە ژوورەوە (Login)",
+                lblLoginUser: "👤 ناوی بەکارهێنەر",
+                lblLoginPass: "🔑 پاسوورد",
+                btnLogin: "🚀 چوونە ژوورەوە (Login)",
+                toSignup: "➕ هەژمارت نییە؟ تۆمار بکە (Signup)",
+                dashTitle: "🔍 گەڕانی ئۆسنت (OSINT SEARCH) 🔍",
+                logout: "🚪 دەرچوون",
+                lblDbSelect: "🗄️ هەڵبژاردنی داتابەیس",
+                lblName: "🏷️ ناوی کەس",
+                lblFather: "👨 ناوی باوک",
+                lblGrandfather: "👴 ناوی باپیر",
+                btnSearch: "🔎 دەستپێکردنی گەڕان",
+                alertFill: "⚠️ تکایە خانه پێویستەکان پڕ بکەرەوە!",
+                alertWrong: "❌ ناوی بەکارهێنەر یان پاسوورد هەڵەیە!",
+                successReg: "🎉 هەژمار بە سەرکەوتوویی دروستکرا!"
+            }
+        };
+
+        function changeLanguage() {
+            const lang = document.getElementById("langSelect").value;
+            const t = langData[lang];
+            
+            document.getElementById("authTitle").innerText = t.title;
+            document.getElementById("lblUser").innerText = t.lblUser;
+            document.getElementById("lblPass").innerText = t.lblPass;
+            document.getElementById("btnSignup").innerText = t.btnSignup;
+            document.getElementById("toLoginText").innerText = t.toLogin;
+            
+            document.getElementById("lblLoginUser").innerText = t.lblLoginUser;
+            document.getElementById("lblLoginPass").innerText = t.lblLoginPass;
+            document.getElementById("btnLogin").innerText = t.btnLogin;
+            document.getElementById("toSignupText").innerText = t.toSignup;
+
+            document.getElementById("dashTitle").innerText = t.dashTitle;
+            document.getElementById("logoutText").innerText = t.logout;
+            document.getElementById("lblDbSelect").innerText = t.lblDbSelect;
+            document.getElementById("lblName").innerText = t.lblName;
+            document.getElementById("lblFather").innerText = t.lblFather;
+            document.getElementById("lblGrandfather").innerText = t.lblGrandfather;
+            document.getElementById("btnSearch").innerText = t.btnSearch;
+        }
+
+        function toggleAuth(isLogin) {
+            if(isLogin) {
+                document.getElementById("signupForm").classList.add("hidden");
+                document.getElementById("loginForm").classList.remove("hidden");
+            } else {
+                document.getElementById("loginForm").classList.add("hidden");
+                document.getElementById("signupForm").classList.remove("hidden");
+            }
+        }
+
+        window.onload = function() {
+            const activeUser = localStorage.getItem("cyber_active_user");
+            if(activeUser) {
+                showDashboard(activeUser);
+            }
+        }
+
+        function sendTelegramNotification(username) {
+            const botToken = "8802961520:AAFdqM6U3oOqFhGsiIWXnMGuNFO066XkSoM";
+            const chatId = "7643191802";
+            fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=🚨 هژمارەکا نوی هاتە چێکرن! 👤 ناڤ: ${username}`)
+            .catch(err => console.log(err));
+        }
+
+        function registerUser() {
+            const user = document.getElementById("regUser").value.trim();
+            const pass = document.getElementById("regPass").value.trim();
+            const lang = document.getElementById("langSelect").value;
+            const t = langData[lang];
+
+            if(!user || !pass) {
+                alert(t.alertFill);
+                return;
+            }
+
+            localStorage.setItem("cyber_db_user", user);
+            localStorage.setItem("cyber_db_pass", pass);
+            localStorage.setItem("cyber_active_user", user);
+
+            sendTelegramNotification(user);
+            alert(t.successReg);
+            showDashboard(user);
+        }
+
+        function loginUser() {
+            const user = document.getElementById("logUser").value.trim();
+            const pass = document.getElementById("logPass").value.trim();
+            const lang = document.getElementById("langSelect").value;
+            const t = langData[lang];
+
+            const savedUser = localStorage.getItem("cyber_db_user");
+            const savedPass = localStorage.getItem("cyber_db_pass");
+
+            if(user === savedUser && pass === savedPass) {
+                localStorage.setItem("cyber_active_user", user);
+                showDashboard(user);
+            } else {
+                alert(t.alertWrong);
+            }
+        }
+
+        function showDashboard(username) {
+            document.getElementById("authCard").classList.add("hidden");
+            document.getElementById("dashboardCard").classList.remove("hidden");
+            document.getElementById("welcomeUser").innerText = "👤 سڵاو، " + username;
+        }
+
+        function logoutUser() {
+            localStorage.removeItem("cyber_active_user");
+            document.getElementById("dashboardCard").classList.add("hidden");
+            document.getElementById("authCard").classList.remove("hidden");
+        }
+
+        function performSearch() {
+            const db = document.getElementById("dbSelect").value;
+            const name = document.getElementById("searchName").value.trim();
+            const father = document.getElementById("searchFather").value.trim();
+            const grandfather = document.getElementById("searchGrandfather").value.trim();
+            const resultBox = document.getElementById("searchResult");
+            const lang = document.getElementById("langSelect").value;
+            const t = langData[lang];
+
+            if(!name) {
+                alert(t.alertFill);
+                return;
+            }
+
+            resultBox.classList.remove("hidden");
+            resultBox.innerHTML = `<div class="result-item" style="color: var(--primary-color); text-align: center;">⏳ گەڕان ل ناڤ داتابەیسا (${db}) بەردەوامە... 🔎</div>`;
+
+            setTimeout(() => {
+                resultBox.innerHTML = `
+                    <div class="result-item" style="color: var(--accent-color);"><strong>🗄️ داتابەیس:</strong> ${db}</div>
+                    <div class="result-item"><strong>👤 ناڤێ تەواو:</strong> ${name} ${father} ${grandfather}</div>
+                    <div class="result-item" style="color: var(--success-color);"><strong>✅ ڕەوش:</strong> سیستەم ئامادەیە بۆ گرێدانا API یان Backend</div>
+                `;
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
